@@ -1,59 +1,44 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import ChromaGrid from "../components/ChromaGrid";
 
-function Books() {
+export default function Books() {
   const [books, setBooks] = useState([]);
-  const [query, setQuery] = useState("inception");
 
   useEffect(() => {
-    const fetchBooks = async () => {
-      try {
-        const res = await axios.get(
-          `http://localhost:5000/api/books/search?q=${query}`
-        );
-        setBooks(res.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchBooks();
-  }, [query]);
+    const randomQueries = ["love", "art", "life", "magic", "science", "dream"];
+    const randomQuery =
+      randomQueries[Math.floor(Math.random() * randomQueries.length)];
+
+    fetch(`http://localhost:5000/api/books/search?q=${randomQuery}`)
+      .then((res) => res.json())
+      .then((data) => {
+        const formattedBooks = data.map((book) => ({
+          image:
+            book.coverImage ||
+            "https://via.placeholder.com/300x400?text=No+Cover",
+          title: book.title,
+          subtitle: `${book.author} • ${book.firstPublishYear}`,
+          handle: book.openLibraryId,
+          borderColor: `hsl(${Math.random() * 360}, 70%, 60%)`,
+          gradient: `linear-gradient(145deg, hsl(${
+            Math.random() * 360
+          }, 70%, 60%), hsl(${Math.random() * 360}, 70%, 40%))`,
+          url: `https://openlibrary.org${book.openLibraryId}`,
+        }));
+        setBooks(formattedBooks);
+      })
+      .catch((err) => console.error("❌ Fetch error:", err));
+  }, []);
 
   return (
-    <div>
-      <h2>Books Page</h2>
-      <input
-        type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search books..."
+    <div style={{ height: "100vh", position: "relative", overflow: "hidden" }}>
+      <ChromaGrid
+        items={books}
+        radius={350}
+        damping={0.45}
+        fadeOut={0.6}
+        ease="power3.out"
       />
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "10px",
-          marginTop: "20px",
-        }}
-      >
-        {books.map((book) => (
-          <div
-            key={book.openLibraryId}
-            style={{ border: "1px solid #ccc", padding: "10px" }}
-          >
-            <img
-              src={book.coverImage || "https://via.placeholder.com/150"}
-              alt={book.title}
-              style={{ width: "100%" }}
-            />
-            <h3>{book.title}</h3>
-            <p>{book.author}</p>
-            <p>First published: {book.firstPublishYear}</p>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }
-
-export default Books;

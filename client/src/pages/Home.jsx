@@ -7,10 +7,9 @@ export default function Home() {
 
   return (
     <div style={{ width: "100vw", height: "100vh", position: "relative" }}>
-      {/* Iridescence animated background */}
       <Iridescence
         color={[1, 1, 1]}
-        mouseReact={false}
+        mouseReact={true}
         amplitude={0.1}
         speed={1.0}
       />
@@ -27,7 +26,7 @@ export default function Home() {
         }}
       >
         <ScrollVelocity
-          texts={["Welcome to our BooksRecommendations!"]}
+          texts={["Welcome to our BooksRecommendations App !"]}
           velocity={velocity}
           className="custom-scroll-text"
         />

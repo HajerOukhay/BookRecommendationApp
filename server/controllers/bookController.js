@@ -16,7 +16,6 @@ const searchBooks = async (req, res) => {
     const response = await axios.get(
       `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}`
     );
-    console.log("📚 API response length:", response.data.docs.length);
 
     // Extract useful info
     const books = response.data.docs.slice(0, 20).map((book) => ({
@@ -28,7 +27,6 @@ const searchBooks = async (req, res) => {
         ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`
         : null,
     }));
-    console.log("✅ Sending books:", books.length);
     res.json(books);
   } catch (err) {
     console.error("❌ Error:", err.message);
