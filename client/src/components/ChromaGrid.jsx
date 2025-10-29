@@ -1,5 +1,6 @@
 import { useRef, useEffect } from "react";
 import { gsap } from "gsap";
+import { useNavigate } from "react-router-dom";
 import "./ChromaGrid.css";
 
 export const ChromaGrid = ({
@@ -17,6 +18,7 @@ export const ChromaGrid = ({
   const setX = useRef(null);
   const setY = useRef(null);
   const pos = useRef({ x: 0, y: 0 });
+  const navigate = useNavigate(); // 👈 for internal navigation
 
   useEffect(() => {
     const el = rootRef.current;
@@ -57,8 +59,11 @@ export const ChromaGrid = ({
     });
   };
 
-  const handleCardClick = (url) => {
-    if (url) window.open(url, "_blank", "noopener,noreferrer");
+  // 👇 navigate to feedbacks page instead of opening a new tab
+  const handleCardClick = (book) => {
+    if (book && book.handle) {
+      navigate(`/feedbacks${book.handle}`);
+    }
   };
 
   return (
@@ -81,7 +86,7 @@ export const ChromaGrid = ({
             card.style.setProperty("--mouse-x", `${x}px`);
             card.style.setProperty("--mouse-y", `${y}px`);
           }}
-          onClick={() => handleCardClick(book.url)}
+          onClick={() => handleCardClick(book)} // 👈 changed
         >
           <div className="chroma-img-wrapper">
             <img src={book.image} alt={book.title} loading="lazy" />

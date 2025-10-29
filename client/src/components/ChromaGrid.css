@@ -2,7 +2,8 @@
 /* Grid container */
 .chroma-grid-container {
   max-height: 100vh; /* or whatever height you want */
-  overflow-y: auto;  /* enable vertical scrolling */
+  overflow-y: auto; 
+  background: #0b0b0b;
 }
 .chroma-grid {
   display: grid;

@@ -31,7 +31,7 @@ export default function Books() {
   }, []);
 
   return (
-    <div style={{ height: "100vh", position: "relative", overflow: "hidden" }}>
+    <div className="chroma-grid-container">
       <ChromaGrid
         items={books}
         radius={350}

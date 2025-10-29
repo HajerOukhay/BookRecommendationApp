@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Books from "./pages/Books";
+import Feedbacks from "./pages/Feedbacks";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/books" element={<Books />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/feedbacks/works/:workId" element={<Feedbacks />} />
         </Routes>
       </div>
     </Router>
