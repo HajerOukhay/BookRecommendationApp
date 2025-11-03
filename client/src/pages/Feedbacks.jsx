@@ -1,5 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { Rating } from "@mui/material";
+import StarIcon from "@mui/icons-material/Star";
+import Skeleton from "@mui/material/Skeleton";
+import "./Feedbacks.css";
+
+const labels = {
+  0.5: "Useless",
+  1: "Useless+",
+  1.5: "Poor",
+  2: "Poor+",
+  2.5: "Ok",
+  3: "Ok+",
+  3.5: "Good",
+  4: "Good+",
+  4.5: "Excellent",
+  5: "Excellent+",
+};
 
 const Feedbacks = () => {
   const { workId } = useParams();
@@ -8,6 +25,7 @@ const Feedbacks = () => {
   const [feedbacks, setFeedbacks] = useState([]);
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState(5);
+  const [hover, setHover] = useState(-1);
   const [loading, setLoading] = useState(true);
 
   // Fetch book info from OpenLibrary
@@ -23,7 +41,7 @@ const Feedbacks = () => {
             : "https://via.placeholder.com/300x400?text=No+Cover",
         });
       } catch (err) {
-        console.error("Error fetching book:", err);
+        console.error("❌ Error fetching book:", err);
       }
     };
     fetchBook();
@@ -34,10 +52,11 @@ const Feedbacks = () => {
     const fetchFeedbacks = async () => {
       try {
         const res = await fetch(`http://localhost:5000/api/feedbacks${bookId}`);
+        if (!res.ok) throw new Error("Feedback fetch failed");
         const data = await res.json();
         setFeedbacks(data);
       } catch (err) {
-        console.error("Error fetching feedbacks:", err);
+        console.error("❌ Error fetching feedbacks:", err);
       } finally {
         setLoading(false);
       }
@@ -45,7 +64,7 @@ const Feedbacks = () => {
     fetchFeedbacks();
   }, [bookId]);
 
-  // Submit new feedback
+  // Submit feedback
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -55,7 +74,8 @@ const Feedbacks = () => {
         body: JSON.stringify({
           comment,
           rating,
-          user: "Anonymous",
+          user:
+            JSON.parse(localStorage.getItem("user"))?.username || "Anonymous",
         }),
       });
       if (res.ok) {
@@ -65,98 +85,115 @@ const Feedbacks = () => {
         setRating(5);
       }
     } catch (err) {
-      console.error("Error submitting feedback:", err);
+      console.error("❌ Error submitting feedback:", err);
     }
   };
 
-  if (loading) return <p className="text-center mt-10">Loading...</p>;
+  if (loading)
+    return (
+      <div className="loading-container">
+        <Skeleton variant="rectangular" width={300} height={400} />
+        <div style={{ marginLeft: 20 }}>
+          <Skeleton
+            variant="text"
+            sx={{ fontSize: "1.5rem", marginBottom: 10 }}
+          />
+          <Skeleton variant="text" sx={{ fontSize: "1rem", width: 250 }} />
+          <Skeleton
+            variant="rectangular"
+            width={300}
+            height={100}
+            sx={{ marginTop: 10 }}
+          />
+        </div>
+      </div>
+    );
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10">
+    <div className="feedbacks-container">
       {book && (
-        <div className="flex flex-col md:flex-row gap-10">
-          {/* Book Cover */}
-          <div className="md:w-1/3 flex justify-center">
+        <div className="book-feedbacks">
+          {/* LEFT SIDE — BOOK INFO */}
+          <div className="book-cover-container">
             <img
               src={book.coverImage}
               alt={book.title}
-              className="rounded-lg shadow-lg w-72 h-auto"
+              className="book-cover"
             />
+            <h2 className="book-title">{book.title}</h2>
           </div>
 
-          {/* Right section */}
-          <div className="flex-1">
-            <h1 className="text-4xl font-bold mb-6 text-gray-900">
-              {book.title}
-            </h1>
+          {/* RIGHT SIDE — FEEDBACKS + FORM */}
+          <div className="feedbacks-section">
+            <h2>
+              Feedbacks <span>({feedbacks.length})</span>
+            </h2>
 
-            {/* Feedbacks Section */}
-            <div className="mb-10">
-              <h2 className="text-2xl font-semibold mb-4 text-gray-800">
-                Feedbacks{" "}
-                <span className="text-blue-600">({feedbacks.length})</span>
-              </h2>
-
+            {/* Feedback List */}
+            <div className="feedbacks-list">
               {feedbacks.length === 0 ? (
-                <p className="text-gray-500 italic">
+                <p className="no-feedback">
                   No feedback yet. Be the first to share yours!
                 </p>
               ) : (
-                <div className="space-y-4">
-                  {feedbacks.map((fb) => (
-                    <div
-                      key={fb._id}
-                      className="p-5 bg-white border rounded-xl shadow-sm hover:shadow-md transition"
-                    >
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-yellow-500 text-lg">
-                          {"★".repeat(fb.rating)}
-                        </span>
-                        <span className="text-sm text-gray-500">
-                          {fb.user || "Anonymous"}
-                        </span>
-                      </div>
-                      <p className="text-gray-800">{fb.comment}</p>
+                feedbacks.map((fb) => (
+                  <div key={fb._id} className="feedback-card">
+                    <div className="feedback-header">
+                      <Rating
+                        name="read-only"
+                        value={fb.rating}
+                        readOnly
+                        precision={0.5}
+                        emptyIcon={
+                          <StarIcon
+                            style={{ opacity: 0.55 }}
+                            fontSize="inherit"
+                          />
+                        }
+                      />
+                      <span className="feedback-user">
+                        {fb.user || "Anonymous"}
+                      </span>
                     </div>
-                  ))}
-                </div>
+                    <p>{fb.comment}</p>
+                  </div>
+                ))
               )}
             </div>
 
-            {/* Add Feedback Form */}
-            <div className="p-6 bg-gray-50 rounded-xl shadow-md">
-              <h3 className="text-xl font-semibold mb-4 text-gray-900">
-                Add Your Own Feedback
-              </h3>
+            {/* Feedback Form */}
+            <div className="feedback-form">
+              <h3>Add Your Feedback</h3>
               <form onSubmit={handleSubmit}>
-                <label className="block mb-2 font-medium text-gray-700">
-                  Your Comment:
-                </label>
+                <label>Your Comment:</label>
                 <textarea
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   required
                   rows="3"
-                  className="w-full p-3 border rounded-lg mb-4 focus:ring-2 focus:ring-blue-400 outline-none"
                   placeholder="Share your thoughts about this book..."
                 />
 
-                <label className="block mb-2 font-medium text-gray-700">
-                  Rating (1–5):
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  max="5"
-                  value={rating}
-                  onChange={(e) => setRating(Number(e.target.value))}
-                  className="w-20 p-2 border rounded-lg mb-4 text-center"
-                />
+                <label>Rating:</label>
+                <div className="rating-input">
+                  <Rating
+                    name="hover-feedback"
+                    value={rating}
+                    precision={0.5}
+                    onChange={(event, newValue) => setRating(newValue)}
+                    onChangeActive={(event, newHover) => setHover(newHover)}
+                    emptyIcon={
+                      <StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />
+                    }
+                  />
+                  {rating !== null && (
+                    <span className="rating-label">
+                      {labels[hover !== -1 ? hover : rating]}
+                    </span>
+                  )}
+                </div>
 
-                <button
-                  type="submit"
-                  className="bg-blue-600 text-white px-5 py-2 rounded-lg font-medium hover:bg-blue-700 transition"
-                >
+                <button type="submit" className="submit-btn">
                   Submit Feedback
                 </button>
               </form>

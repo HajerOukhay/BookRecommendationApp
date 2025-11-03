@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { setToken } from "../utils/auth";
+import { useNavigate } from "react-router-dom";
 
-function Register() {
+function Register({ setUser }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -14,8 +17,13 @@ function Register() {
         email,
         password,
       });
-      console.log(res.data);
-      alert("Registration successful!");
+
+      // Save token & user
+      setToken(res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      setUser(res.data.user); // ✅ updates App state
+
+      navigate("/books"); // ✅ redirect
     } catch (err) {
       console.error(err);
       alert("Registration failed");
@@ -30,6 +38,7 @@ function Register() {
         placeholder="Username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
+        required
       />
       <br />
       <input
@@ -37,6 +46,7 @@ function Register() {
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
+        required
       />
       <br />
       <input
@@ -44,6 +54,7 @@ function Register() {
         placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
+        required
       />
       <br />
       <button type="submit">Register</button>
