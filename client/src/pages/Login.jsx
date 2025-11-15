@@ -1,57 +1,80 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { setToken } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
+import "./Auth.css";
+import loginImage from "../assets/login-image.png";
 
-function Login({ setUser }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+export default function Login({ setUser }) {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({ username: "", password: "" });
 
-  const handleSubmit = async (e) => {
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleLogin = (e) => {
     e.preventDefault();
-    try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
-        email,
-        password,
-      });
 
-      // Save token and user
-      setToken(res.data.token);
-      if (res.data.user) {
-        localStorage.setItem("user", JSON.stringify(res.data.user));
-        setUser(res.data.user); // ✅ instantly updates App state
-      }
+    const loggedUser = { username: formData.username };
 
-      navigate("/books"); // ✅ go to books page
-    } catch (err) {
-      console.error(err);
-      alert("Login failed");
-    }
+    localStorage.setItem("user", JSON.stringify(loggedUser));
+
+    setUser(loggedUser);
+
+    navigate("/books");
+  };
+
+  const handleSignup = () => {
+    navigate("/register");
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Login</h2>
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      <br />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-      <br />
-      <button type="submit">Login</button>
-    </form>
+    <div className="login-container">
+      <div className="form-wrapper">
+        <form className="form" onSubmit={handleLogin}>
+          <p id="heading">Login</p>
+
+          <div className="field">
+            <input
+              name="username"
+              className="input-field"
+              placeholder="Username"
+              type="text"
+              value={formData.username}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="field">
+            <input
+              name="password"
+              className="input-field"
+              placeholder="Password"
+              type="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="btn">
+            <button type="submit" className="button1">
+              Login
+            </button>
+            <button type="button" className="button2" onClick={handleSignup}>
+              Sign Up
+            </button>
+          </div>
+
+          <button type="button" className="button3">
+            Forgot Password
+          </button>
+        </form>
+      </div>
+
+      <div className="image-wrapper">
+        <img src={loginImage} alt="Login Illustration" />
+      </div>
+    </div>
   );
 }
-
-export default Login;

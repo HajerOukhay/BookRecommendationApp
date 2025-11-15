@@ -1,24 +1,40 @@
 /* Feedbacks.css */
 
+/* === CONTAINER === */
 .feedbacks-container {
   padding: 2rem;
   display: flex;
   justify-content: center;
-  background-color: #f9fafb;
+  background-color: #A7EBF2; /* Luna light bg */
   min-height: 100vh;
+  transition: background-color 0.3s, color 0.3s;
 }
 
+body.dark-mode .feedbacks-container {
+  background-color: #023859; /* Dark mode bg */
+  color: #A7EBF2; /* Light text */
+}
+
+/* === CARD === */
 .book-feedbacks {
   display: flex;
   gap: 2rem;
   max-width: 1100px;
   width: 100%;
-  background: white;
+  background: #54ACBF; /* Light card bg */
   padding: 2rem;
   border-radius: 1rem;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  color: #011C40;
+  transition: background 0.3s, color 0.3s;
 }
 
+body.dark-mode .book-feedbacks {
+  background: #26658C; /* Dark card bg */
+  color: #A7EBF2;
+}
+
+/* === BOOK COVER === */
 .book-cover-container {
   flex: 0 0 280px;
 }
@@ -31,6 +47,7 @@
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
+/* === FEEDBACK SECTION === */
 .feedbacks-section {
   flex: 1;
   display: flex;
@@ -48,12 +65,21 @@
   margin-bottom: 1rem;
 }
 
+/* === FEEDBACK CARD === */
 .feedback-card {
-  background: #f8fafc;
+  background: #A7EBF2; /* Card light */
   padding: 1rem;
   border-radius: 0.5rem;
   margin-bottom: 0.75rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #26658C;
+  color: #011C40;
+  transition: background 0.3s, color 0.3s;
+}
+
+body.dark-mode .feedback-card {
+  background: #023859; /* Dark mode card */
+  color: #A7EBF2;
+  border: 1px solid #54ACBF;
 }
 
 .feedback-header {
@@ -64,13 +90,18 @@
 }
 
 .feedback-user {
-  color: #6b7280;
+  color: #26658C;
   font-size: 0.9rem;
 }
 
+body.dark-mode .feedback-user {
+  color: #A7EBF2;
+}
+
+/* === FORM === */
 .feedback-form {
   margin-top: 2rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid #26658C;
   padding-top: 1.5rem;
 }
 
@@ -84,8 +115,17 @@
   resize: none;
   padding: 0.75rem;
   border-radius: 0.5rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid #26658C;
   font-size: 1rem;
+  background-color: #A7EBF2;
+  color: #011C40;
+  transition: background 0.3s, color 0.3s, border 0.3s;
+}
+
+body.dark-mode .feedback-form textarea {
+  background-color: #023859;
+  color: #A7EBF2;
+  border: 1px solid #54ACBF;
 }
 
 .rating-input {
@@ -96,8 +136,8 @@
 
 .submit-btn {
   align-self: flex-start;
-  background-color: #2563eb;
-  color: white;
+  background-color: #26658C; /* Luna accent */
+  color: #A7EBF2;
   padding: 0.5rem 1.25rem;
   border: none;
   border-radius: 0.5rem;
@@ -106,10 +146,14 @@
 }
 
 .submit-btn:hover {
-  background-color: #1d4ed8;
+  background-color: #023859; /* Darker on hover */
 }
 
 .no-feedback {
-  color: #6b7280;
+  color: #26658C;
   font-style: italic;
+}
+
+body.dark-mode .no-feedback {
+  color: #A7EBF2;
 }

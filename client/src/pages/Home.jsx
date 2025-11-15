@@ -1,36 +1,77 @@
-import React from "react";
-import Iridescence from "../components/Iridescence";
-import ScrollVelocity from "../components/ScrollVelocity";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import "./Home.css";
+import Navbar from "../components/Navbar";
 
 export default function Home() {
-  const velocity = 100;
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setUser(null);
+    navigate("/");
+  };
+
+  const goToFavorites = () => {
+    navigate("/favorites");
+  };
+
+  const handleLogin = () => {
+    navigate("/login");
+  };
+
+  const handleSignup = () => {
+    navigate("/register");
+  };
 
   return (
-    <div style={{ width: "100vw", height: "100vh", position: "relative" }}>
-      <Iridescence
-        color={[1, 1, 1]}
-        mouseReact={true}
-        amplitude={0.1}
-        speed={1.0}
-      />
+    <div className="home-container">
+      <header className="home-header">
+        <h2 className="logo">📚 Book Recommendations</h2>
 
-      <div
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "100%",
-          textAlign: "center",
-          pointerEvents: "none", // allows mouse pass-through if needed
-        }}
-      >
-        <ScrollVelocity
-          texts={["Welcome to our BooksRecommendations App !"]}
-          velocity={velocity}
-          className="custom-scroll-text"
-        />
-      </div>
+        <div className="auth-section">
+          {user ? (
+            <div
+              className="user-dropdown"
+              onMouseEnter={() => setDropdownOpen(true)}
+              onMouseLeave={() => setDropdownOpen(false)}
+            >
+              <span className="username">
+                {user.username} <span className="arrow">▼</span>
+              </span>
+              {dropdownOpen && (
+                <div className="dropdown-menu">
+                  <button onClick={goToFavorites}>❤️ Favorite Books</button>
+                  <button onClick={handleLogout}>🚪 Logout</button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="auth-buttons">
+              <button className="login-btn" onClick={handleLogin}>
+                Login
+              </button>
+              <button className="signup-btn" onClick={handleSignup}>
+                Signup
+              </button>
+            </div>
+          )}
+        </div>
+      </header>
+
+      <main className="home-main">
+        <h1>Find Books and more !</h1>
+        <p>A book recommendation is a whisper from one mind to another</p>
+      </main>
     </div>
   );
 }

@@ -1,0 +1,114 @@
+.login-container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* --- Formulaire à gauche --- */
+.form-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ffffff; /* Fond blanc */
+}
+
+/* --- Image à droite --- */
+.image-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ffffff;
+}
+
+.image-wrapper img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 10px;
+}
+
+/* --- Form styles --- */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 2em;
+  border-radius: 25px;
+  width: 300px;
+  transition: 0.4s ease-in-out;
+  background-color: #ffffff; /* Formulaire blanc */
+  box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.2); /* Ombre pour relief */
+}
+
+.form:hover {
+  transform: scale(1.03);
+}
+
+#heading {
+  text-align: center;
+  margin-bottom: 2em;
+  color: #171717; /* Texte sombre */
+  font-size: 1.5em;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.6em;
+  border-radius: 25px;
+  background-color: #f0f0f0; /* Champs légèrement gris */
+  box-shadow: inset 2px 5px 10px rgba(0,0,0,0.05);
+}
+
+.input-icon {
+  height: 1.3em;
+  width: 1.3em;
+  fill: #171717; /* Icône sombre */
+}
+
+.input-field {
+  background: none;
+  border: none;
+  outline: none;
+  width: 100%;
+  color: #171717; /* Texte noir */
+}
+
+.btn {
+  display: flex;
+  justify-content: center;
+  gap: 0.5em;
+  margin-top: 2em;
+}
+
+.button1,
+.button2,
+.button3 {
+  padding: 0.5em 1em;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+  transition: 0.4s ease-in-out;
+  color: #ffffff;
+}
+
+.button1,
+.button2 {
+  background-color: #252525;
+}
+
+.button1:hover,
+.button2:hover {
+  background-color: black;
+}
+
+.button3 {
+  background-color: #252525;
+  margin-top: 1em;
+}
+
+.button3:hover {
+  background-color: red;
+}

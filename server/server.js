@@ -9,6 +9,7 @@ const userRoutes = require("./routes/userRoutes");
 const protectedRoutes = require("./routes/protectedRoutes");
 const bookRoutes = require("./routes/bookRoutes");
 const feedbackRoutes = require("./routes/feedbacks");
+const favoriteRoutes = require("./routes/favoriteRoutes");
 
 const app = express();
 
@@ -48,7 +49,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/protected", protectedRoutes);
 app.use("/api/books", bookRoutes);
 app.use("/api/feedbacks", feedbackRoutes);
-
+app.use("/api/favorites", favoriteRoutes);
 // ──────────────────────────────────────────────
 // 🚀 Server Start
 // ──────────────────────────────────────────────

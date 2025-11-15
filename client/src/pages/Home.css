@@ -1,0 +1,143 @@
+/* --- Global container --- */
+.home-container {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  font-family: "Georgia", serif;
+  color: #3b2f2f;
+  background-image: url("bookshelf.png");
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  background-color: #f8f6f2;
+}
+
+/* --- Header --- */
+.home-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  color: #7b3f00;
+  font-weight: bold;
+}
+
+/* --- Boutons Login / Signup --- */
+.auth-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-left: 5%;
+}
+
+.auth-buttons button {
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.login-btn {
+  background-color: #7b3f00;
+  color: white;
+}
+
+.signup-btn {
+  background-color: #c19a6b;
+  color: #ffffff;
+  margin-right: 6rem;
+}
+
+.auth-buttons button:hover {
+  transform: scale(1.05);
+}
+
+/* --- Texte principal --- */
+.home-main {
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.home-main h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.home-main p {
+  font-style: italic;
+  font-size: 1.2rem;
+  color: #6b4e2e;
+}
+
+/* --- User dropdown (quand connecté) --- */
+.user-dropdown {
+  position: relative;
+  font-weight: 600;
+  color: #66322a;
+  cursor: pointer;
+  margin-right: 4rem;
+}
+
+.username {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.arrow {
+  font-size: 0.8rem;
+  color: #7b3f00;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.dropdown-menu button {
+  background: none;
+  border: none;
+  padding: 10px 20px;
+  text-align: left;
+  font-size: 15px;
+  color: #66322a;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.dropdown-menu button:hover {
+  background: #f4ede4;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
