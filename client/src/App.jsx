@@ -5,21 +5,25 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Books from "./pages/Books";
 import Favorites from "./pages/Favorites";
+import Feedbacks from "./pages/Feedbacks";
 
 function App() {
   const [user, setUser] = useState(null);
 
-  // Charger l'utilisateur depuis localStorage au démarrage
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) {
+    const token = localStorage.getItem("token");
+
+    if (storedUser && token) {
       setUser(JSON.parse(storedUser));
+    } else {
+      setUser(null);
     }
   }, []);
 
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<Home user={user} setUser={setUser} />} />
       <Route path="/login" element={<Login setUser={setUser} />} />
       <Route path="/register" element={<Register setUser={setUser} />} />
       <Route
@@ -30,7 +34,11 @@ function App() {
         path="/favorites"
         element={user ? <Favorites user={user} /> : <Navigate to="/login" />}
       />
-      <Route path="*" element={<Navigate to="/" />} />
+
+      <Route
+        path="/feedbacks/:workId"
+        element={user ? <Feedbacks user={user} /> : <Navigate to="/login" />}
+      />
     </Routes>
   );
 }

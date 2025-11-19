@@ -1,35 +1,26 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 
-function Navbar() {
+function Navbar({ user, setUser }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [user, setUser] = useState(null);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    setUser(null);
+    localStorage.removeItem("token");
+    setUser(null); // met à jour App.jsx
     navigate("/");
   };
 
   return (
     <header className="navbar">
-      {/* LOGO */}
       <div className="navbar-left">
         <Link to="/" className="navbar-logo">
           📚 Book Recommendations
         </Link>
       </div>
 
-      {/* USER SECTION */}
       <div className="navbar-right">
         {user ? (
           <div className="user-menu">
@@ -51,11 +42,11 @@ function Navbar() {
           </div>
         ) : (
           <div className="auth-links">
-            <Link to="/login" className="login">
+            {/* Boutons Login/Register modernes */}
+            <Link to="/login" className="auth-btn login">
               Login
             </Link>
-            <span>/</span>
-            <Link to="/register" className="register">
+            <Link to="/register" className="auth-btn register">
               Register
             </Link>
           </div>

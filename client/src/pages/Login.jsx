@@ -1,26 +1,48 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Auth.css";
+import "./styles/Auth.css";
 import loginImage from "../assets/login-image.png";
 
 export default function Login({ setUser }) {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    const loggedUser = { username: formData.username };
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData), // { email, password }
+      });
 
-    localStorage.setItem("user", JSON.stringify(loggedUser));
+      const data = await res.json();
 
-    setUser(loggedUser);
-
-    navigate("/books");
+      if (res.ok) {
+        const loggedUser = {
+          username: data.user.username,
+          email: formData.email,
+        };
+        localStorage.setItem("user", JSON.stringify(loggedUser));
+        localStorage.setItem("token", data.token);
+        setUser(loggedUser);
+        navigate("/books");
+      } else {
+        alert(data.message || "Login failed");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Une erreur est survenue lors du login");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSignup = () => {
@@ -35,11 +57,11 @@ export default function Login({ setUser }) {
 
           <div className="field">
             <input
-              name="username"
+              name="email"
               className="input-field"
-              placeholder="Username"
-              type="text"
-              value={formData.username}
+              placeholder="Email"
+              type="email"
+              value={formData.email}
               onChange={handleChange}
               required
             />
@@ -58,8 +80,8 @@ export default function Login({ setUser }) {
           </div>
 
           <div className="btn">
-            <button type="submit" className="button1">
-              Login
+            <button type="submit" className="button1" disabled={loading}>
+              {loading ? "Logging in..." : "Login"}
             </button>
             <button type="button" className="button2" onClick={handleSignup}>
               Sign Up

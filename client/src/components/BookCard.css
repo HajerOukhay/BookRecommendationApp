@@ -1,24 +1,32 @@
+
+
 .book-card {
-  background-color: white;
-  border-radius: 12px;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+  background-color: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  transition: transform 0.2s;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
   position: relative;
 }
 
+
 .book-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-6px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
+/* Book cover */
 .book-cover {
   position: relative;
   width: 100%;
   padding-top: 150%; /* ratio 2:3 */
   overflow: hidden;
+  background-color: #f2f2f2;
+  border-bottom: 1px solid #eee;
 }
 
 .book-cover img {
@@ -30,25 +38,43 @@
   object-fit: cover;
 }
 
+.favorite-bottom {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+}
 .favorite-overlay {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
 }
 
+/* Book info */
 .book-info {
-  padding: 10px 15px;
+  padding: 15px 12px;
   text-align: center;
 }
 
 .book-info h3 {
-  margin: 5px 0;
-  font-size: 16px;
-  font-weight: bold;
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: #333;
 }
 
 .book-info p {
-  margin: 0;
+  margin-top: 5px;
   font-size: 14px;
-  color: #555;
+  color: #666;
+}
+
+/* Optional small fade animation */
+.book-card {
+  animation: fadeIn 0.4s ease both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }

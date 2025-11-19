@@ -104,39 +104,21 @@
   border-bottom: 1px solid #eee;
 }
 
-/* Liens d'authentification */
-.auth-links {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: white;
-}
-
+/* Liens Login & Register */
 .auth-links a {
-  color: white;
   text-decoration: none;
   padding: 0.5rem 1rem;
   border-radius: 20px;
   transition: all 0.3s;
   font-weight: 500;
-}
-
-.auth-links .login:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.auth-links .register {
   background: #c19a6b;
   color: #7b3f00;
+  border: 1px solid #7b3f00;
 }
 
-.auth-links .register:hover {
+.auth-links a:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
-}
-
-.auth-links span {
-  color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 4px 12px rgba(193, 154, 107, 0.5);
 }
 
 /* Responsive */
@@ -157,4 +139,48 @@
   .dropdown {
     min-width: 180px;
   }
+}
+/* ===== Boutons élégants BookVerse ===== */
+.auth-links {
+  display: flex;
+  gap: 20px;
+}
+
+.auth-btn {
+  padding: 12px 28px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  display: inline-block;
+  letter-spacing: 0.5px;
+}
+
+/* Login = Beige chic */
+.auth-btn.login {
+  background-color: #f4e9db;
+  color: #5b3a29;
+  box-shadow: 0 4px 10px rgba(90, 60, 40, 0.15);
+}
+
+.auth-btn.login:hover {
+  background-color: #e8dcc7;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(90, 60, 40, 0.25);
+}
+
+/* Register = Marron haut de gamme */
+.auth-btn.register {
+  background-color: #6f4e37;
+  color: #fdf7ef;
+  box-shadow: 0 4px 10px rgba(50, 30, 20, 0.2);
+}
+
+.auth-btn.register:hover {
+  background-color: #5c3f2e;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(50, 30, 20, 0.3);
 }

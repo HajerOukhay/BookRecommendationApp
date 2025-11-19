@@ -1,105 +1,70 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import Navbar from "../components/Navbar";
-import "./Favorites.css";
+import { setFavorites, removeFavorite } from "../redux/store/favoritesSlice";
+import "./styles/Favorites.css";
 
-function Favorites() {
-  const [favorites, setFavorites] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+function Favorites({ user }) {
+  const dispatch = useDispatch();
+  const favorites = useSelector((state) => state.favorites.favorites);
 
+  // Load favorites from backend
   useEffect(() => {
     const loadFavorites = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
       try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          navigate("/login");
-          return;
-        }
-
         const res = await fetch("http://localhost:5000/api/favorites", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
-
         if (res.ok) {
           const data = await res.json();
-          setFavorites(data.favorites);
-        } else {
-          console.error("Failed to load favorites");
+          dispatch(setFavorites(data.favorites || data));
         }
-      } catch (error) {
-        console.error("Error loading favorites:", error);
-      } finally {
-        setLoading(false);
+      } catch (err) {
+        console.error("Error loading favorites:", err);
       }
     };
-
     loadFavorites();
-  }, [navigate]);
+  }, [dispatch]);
 
-  const removeFavorite = async (bookKey) => {
+  const handleRemove = async (bookKey) => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
     try {
-      const token = localStorage.getItem("token");
-      const bookKeyEncoded = encodeURIComponent(bookKey);
-
-      await fetch(`http://localhost:5000/api/favorites/${bookKeyEncoded}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      setFavorites((prev) => prev.filter((fav) => fav.bookKey !== bookKey));
-    } catch (error) {
-      console.error("Error removing favorite:", error);
+      await fetch(
+        `http://localhost:5000/api/favorites/${encodeURIComponent(bookKey)}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      dispatch(removeFavorite(bookKey));
+    } catch (err) {
+      console.error("Error removing favorite:", err);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="favorites-page">
-        <Navbar />
-        <div className="loading">Loading favorites...</div>
-      </div>
-    );
-  }
-
   return (
     <div className="favorites-page">
-      <Navbar />
-
-      <div className="favorites-content">
-        <h1>❤️ Your Favorite Books</h1>
-
-        {favorites.length === 0 ? (
-          <div className="empty-state">
-            <p>No favorite books yet.</p>
-            <button onClick={() => navigate("/books")}>Browse Books</button>
-          </div>
-        ) : (
-          <div className="favorites-grid">
-            {favorites.map((book) => (
-              <div key={book.bookKey} className="favorite-card">
-                <div className="favorite-cover">
-                  <img src={book.cover} alt={book.title} />
-                </div>
-                <div className="favorite-info">
-                  <h3>{book.title}</h3>
-                  <p>{book.author}</p>
-                  <button
-                    className="remove-btn"
-                    onClick={() => removeFavorite(book.bookKey)}
-                  >
-                    Remove
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      <Navbar user={user} />
+      <h1>❤️ Your Favorite Books</h1>
+      {favorites.length === 0 ? (
+        <p>No favorite books yet.</p>
+      ) : (
+        <div className="favorites-grid">
+          {favorites.map((book) => (
+            <div key={book.bookKey} className="favorite-card">
+              <img src={book.cover} alt={book.title} />
+              <h3>{book.title}</h3>
+              <p>{book.author}</p>
+              <button onClick={() => handleRemove(book.bookKey)}>Remove</button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

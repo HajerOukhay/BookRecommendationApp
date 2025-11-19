@@ -1,50 +1,50 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Navbar from "../components/Navbar";
 import BookCard from "../components/BookCard";
-import "./Books.css";
+import { setFavorites } from "../redux/store/favoritesSlice";
+import "./styles/Books.css";
 
 function Books({ user }) {
+  const dispatch = useDispatch();
+  const favorites = useSelector((state) => state.favorites.favorites);
   const [books, setBooks] = useState([]);
   const [query, setQuery] = useState("");
-  const [favorites, setFavorites] = useState({});
   const [loading, setLoading] = useState(false);
 
-  // Charger les favoris depuis le backend
+  // Charger les favoris depuis le backend et stocker dans Redux
   useEffect(() => {
     const loadFavorites = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
+      const token = localStorage.getItem("token");
+      if (!token) return;
 
+      try {
         const res = await fetch("http://localhost:5000/api/favorites", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         if (res.ok) {
           const data = await res.json();
-          const favMap = {};
-          data.favorites.forEach((fav) => {
-            favMap[fav.bookKey] = true;
-          });
-          setFavorites(favMap);
+          // Backend renvoie soit data.favorites soit data directement
+          dispatch(setFavorites(data.favorites || data));
+        } else {
+          console.error("Failed to load favorites");
         }
-      } catch (error) {
-        console.error("Error loading favorites:", error);
+      } catch (err) {
+        console.error("Error loading favorites:", err);
       }
     };
 
     loadFavorites();
-  }, []);
+  }, [dispatch]);
 
-  // Charger les livres
+  // Charger les livres depuis OpenLibrary
   useEffect(() => {
     const fetchBooks = async () => {
       setLoading(true);
       try {
         const res = await fetch(
-          `https://openlibrary.org/search.json?q=${query || "programming"}`
+          `https://openlibrary.org/search.json?q=${query || "love"}`
         );
         const data = await res.json();
 
@@ -58,8 +58,8 @@ function Books({ user }) {
         }));
 
         setBooks(formatted);
-      } catch (error) {
-        console.error("Error fetching:", error);
+      } catch (err) {
+        console.error("Error fetching books:", err);
       } finally {
         setLoading(false);
       }
@@ -68,64 +68,10 @@ function Books({ user }) {
     fetchBooks();
   }, [query]);
 
-  // Toggle favori
-  const toggleFavorite = async (book) => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Please login to add favorites");
-      return;
-    }
-
-    const isFavorite = favorites[book.key];
-
-    try {
-      if (isFavorite) {
-        // Supprimer du backend
-        const bookKeyEncoded = encodeURIComponent(book.key);
-        await fetch(`http://localhost:5000/api/favorites/${bookKeyEncoded}`, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        // Supprimer localement
-        setFavorites((prev) => {
-          const newFav = { ...prev };
-          delete newFav[book.key];
-          return newFav;
-        });
-      } else {
-        // Ajouter au backend
-        await fetch("http://localhost:5000/api/favorites", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            bookKey: book.key,
-            title: book.title,
-            author: book.author,
-            cover: book.cover,
-          }),
-        });
-
-        // Ajouter localement
-        setFavorites((prev) => ({
-          ...prev,
-          [book.key]: true,
-        }));
-      }
-    } catch (error) {
-      console.error("Error toggling favorite:", error);
-      alert("Failed to update favorites");
-    }
-  };
-
   return (
     <div className="books-page">
-      <Navbar />
+      {/* Navbar unique pour toutes les pages */}
+      <Navbar user={user} />
 
       <div className="search-container">
         <div className="group">
@@ -150,12 +96,7 @@ function Books({ user }) {
       ) : (
         <div className="books-grid">
           {books.map((b) => (
-            <BookCard
-              key={b.key}
-              book={b}
-              isFavorite={!!favorites[b.key]}
-              toggleFavorite={() => toggleFavorite(b)}
-            />
+            <BookCard key={b.key} book={b} />
           ))}
         </div>
       )}

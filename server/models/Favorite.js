@@ -26,7 +26,6 @@ const favoriteSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Index pour éviter les doublons
 favoriteSchema.index({ userId: 1, bookKey: 1 }, { unique: true });
 
 module.exports = mongoose.model("Favorite", favoriteSchema);
