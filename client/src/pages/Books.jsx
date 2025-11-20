@@ -1,106 +1,150 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import Navbar from "../components/Navbar";
 import BookCard from "../components/BookCard";
-import { setFavorites } from "../redux/store/favoritesSlice";
+import { jwtDecode } from "jwt-decode";
 import "./styles/Books.css";
 
-function Books({ user }) {
-  const dispatch = useDispatch();
-  const favorites = useSelector((state) => state.favorites.favorites);
+function Books() {
   const [books, setBooks] = useState([]);
-  const [query, setQuery] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [favorites, setFavorites] = useState([]);
+  const [query, setQuery] = useState("programming");
 
-  // Charger les favoris depuis le backend et stocker dans Redux
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+
+  const token = localStorage.getItem("token");
+  const decoded = token ? jwtDecode(token) : null;
+  const userId = decoded ? decoded.id : null;
+
+  // Load books from OpenLibrary
+  async function loadBooks(search) {
+    try {
+      const res = await fetch(
+        `https://openlibrary.org/search.json?q=${encodeURIComponent(search)}`
+      );
+      const data = await res.json();
+
+      const docs = Array.isArray(data.docs) ? data.docs : [];
+
+      const formattedBooks = docs.slice(0, 30).map((item) => ({
+        key: item.key,
+        title: item.title,
+        author: item.author_name ? item.author_name[0] : "Unknown",
+        cover: item.cover_i
+          ? `https://covers.openlibrary.org/b/id/${item.cover_i}-L.jpg`
+          : "https://via.placeholder.com/150?text=No+Cover",
+      }));
+
+      setBooks(formattedBooks);
+    } catch (err) {
+      console.error("Error loading books:", err);
+      setBooks([]);
+    }
+  }
+
   useEffect(() => {
-    const loadFavorites = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return;
+    loadBooks(query);
+  }, []);
 
-      try {
-        const res = await fetch("http://localhost:5000/api/favorites", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+  // Load favorites from backend
+  useEffect(() => {
+    if (!token || !userId) return;
 
-        if (res.ok) {
-          const data = await res.json();
-          // Backend renvoie soit data.favorites soit data directement
-          dispatch(setFavorites(data.favorites || data));
-        } else {
-          console.error("Failed to load favorites");
-        }
-      } catch (err) {
-        console.error("Error loading favorites:", err);
-      }
-    };
+    async function loadFavorites() {
+      const res = await fetch(`http://localhost:5000/api/favorites/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const data = await res.json();
+      setFavorites(data.map((f) => f.bookKey));
+    }
 
     loadFavorites();
-  }, [dispatch]);
+  }, [token, userId]);
 
-  // Charger les livres depuis OpenLibrary
-  useEffect(() => {
-    const fetchBooks = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(
-          `https://openlibrary.org/search.json?q=${query || "love"}`
-        );
-        const data = await res.json();
+  // Add/remove favorite
+  async function toggleFavorite(bookKey) {
+    if (!token) {
+      alert("Please login to add favorites");
+      return;
+    }
 
-        const formatted = data.docs.slice(0, 30).map((book) => ({
-          key: book.key,
+    const isFav = favorites.includes(bookKey);
+    const book = books.find((b) => b.key === bookKey);
+
+    if (!book) return;
+
+    if (isFav) {
+      await fetch("http://localhost:5000/api/favorites", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ userId, bookKey }),
+      });
+
+      setFavorites((prev) => prev.filter((key) => key !== bookKey));
+    } else {
+      await fetch("http://localhost:5000/api/favorites", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          userId,
+          bookKey: book.key,
           title: book.title,
-          author: book.author_name?.[0] || "Unknown author",
-          cover: book.cover_i
-            ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`
-            : "/no-cover.png",
-        }));
+          author: book.author,
+          cover: book.cover,
+        }),
+      });
 
-        setBooks(formatted);
-      } catch (err) {
-        console.error("Error fetching books:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+      setFavorites((prev) => [...prev, bookKey]);
+    }
+  }
 
-    fetchBooks();
-  }, [query]);
+  function handleSearch(e) {
+    const value = e.target.value;
+    setQuery(value);
+    loadBooks(value);
+  }
 
   return (
-    <div className="books-page">
-      {/* Navbar unique pour toutes les pages */}
-      <Navbar user={user} />
+    <>
+      <Navbar user={user} setUser={setUser} />
 
-      <div className="search-container">
-        <div className="group">
-          <svg viewBox="0 0 24 24" aria-hidden="true" className="icon">
-            <g>
-              <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
-            </g>
-          </svg>
+      <div className="books-page">
+        <div className="search-container">
+          <div className="group">
+            <svg className="icon" viewBox="0 0 24 24">
+              <path d="M10 2a8 8 0 015.29 13.71l5 5-1.42 1.42-5-5A8 8 0 1110 2zm0 2a6 6 0 100 12 6 6 0 000-12z" />
+            </svg>
 
-          <input
-            className="input"
-            type="search"
-            placeholder="Search for books..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
+            <input
+              className="input"
+              type="text"
+              placeholder="Search books..."
+              onChange={handleSearch}
+            />
+          </div>
         </div>
-      </div>
 
-      {loading ? (
-        <div className="loading">Loading books...</div>
-      ) : (
         <div className="books-grid">
-          {books.map((b) => (
-            <BookCard key={b.key} book={b} />
+          {books.map((book) => (
+            <BookCard
+              key={book.key}
+              book={book}
+              isFavorite={favorites.includes(book.key)}
+              toggleFavorite={() => toggleFavorite(book.key)}
+            />
           ))}
         </div>
-      )}
-    </div>
+      </div>
+    </>
   );
 }
 

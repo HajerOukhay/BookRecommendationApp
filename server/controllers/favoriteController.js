@@ -1,16 +1,17 @@
 const Favorite = require("../models/Favorite");
 
-// Ajouter aux favoris
+// Add favorite
 exports.addFavorite = async (req, res) => {
   try {
-    const { userId, bookId } = req.body;
+    const { userId, bookKey, title, author, cover } = req.body;
 
-    const exists = await Favorite.findOne({ userId, bookId });
+    // Check if already exists
+    const exists = await Favorite.findOne({ userId, bookKey });
     if (exists) {
       return res.status(400).json({ message: "Already in favorites" });
     }
 
-    const fav = new Favorite({ userId, bookId });
+    const fav = new Favorite({ userId, bookKey, title, author, cover });
     await fav.save();
 
     res.json({ message: "Added to favorites", favorite: fav });
@@ -19,26 +20,23 @@ exports.addFavorite = async (req, res) => {
   }
 };
 
-// Supprimer des favoris
+// Remove favorite
 exports.removeFavorite = async (req, res) => {
   try {
-    const { userId, bookId } = req.body;
+    const { userId, bookKey } = req.body;
 
-    await Favorite.findOneAndDelete({ userId, bookId });
-
+    await Favorite.findOneAndDelete({ userId, bookKey });
     res.json({ message: "Removed from favorites" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// Récupérer les favoris
+// Get favorites for a user
 exports.getFavorites = async (req, res) => {
   try {
     const userId = req.params.userId;
-
-    const favorites = await Favorite.find({ userId }).populate("bookId");
-
+    const favorites = await Favorite.find({ userId });
     res.json(favorites);
   } catch (error) {
     res.status(500).json({ error: error.message });
