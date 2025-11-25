@@ -1,6 +1,5 @@
 .favorites-page {
   min-height: 100vh;
-  
 }
 
 .favorites-content {
@@ -42,7 +41,7 @@
   border-radius: 25px;
   font-size: 1rem;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.2s, background 0.2s;
 }
 
 .empty-state button:hover {
@@ -84,6 +83,9 @@
 
 .favorite-info {
   padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .favorite-info h3 {
@@ -99,20 +101,23 @@
   margin-bottom: 1rem;
 }
 
+/* Bouton Remove stylé */
 .remove-btn {
   width: 100%;
-  background: #dc3545;
+  background: #dc3545; /* rouge vif */
   color: white;
   border: none;
   padding: 0.6rem;
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.95rem;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
 
 .remove-btn:hover {
-  background: #c82333;
+  background: #c82333; /* rouge plus foncé au hover */
+  transform: translateY(-2px);
 }
 
 @media (max-width: 768px) {

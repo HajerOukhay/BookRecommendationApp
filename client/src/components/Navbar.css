@@ -9,6 +9,20 @@
   top: 0;
   z-index: 100;
 }
+.books-btn {
+  margin-right: 10px;
+  padding: 8px 12px;
+  background: #e3e3ff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.books-btn:hover {
+  background: #d1d1ff;
+}
+
 
 .navbar-left .navbar-logo {
   font-size: 1.5rem;

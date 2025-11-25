@@ -32,7 +32,13 @@ function App() {
       />
       <Route
         path="/favorites"
-        element={user ? <Favorites user={user} /> : <Navigate to="/login" />}
+        element={
+          user ? (
+            <Favorites user={user} setUser={setUser} />
+          ) : (
+            <Navigate to="/login" />
+          )
+        }
       />
 
       <Route

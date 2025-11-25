@@ -46,7 +46,7 @@ function Books() {
 
   useEffect(() => {
     loadBooks(query);
-  }, []);
+  });
 
   // Load favorites from backend
   useEffect(() => {

@@ -3,7 +3,7 @@ import Navbar from "../components/Navbar";
 import { jwtDecode } from "jwt-decode";
 import "./styles/Favorites.css";
 
-function Favorites() {
+function Favorites({ user, setUser }) {
   const [favorites, setFavorites] = useState([]);
 
   const token = localStorage.getItem("token");
@@ -40,7 +40,7 @@ function Favorites() {
 
   return (
     <>
-      <Navbar />
+      <Navbar user={user} setUser={setUser} />
 
       <div className="favorites-page">
         <h1>❤️ Your Favorite Books</h1>
@@ -55,7 +55,10 @@ function Favorites() {
                 <h3>{book.title}</h3>
                 <p>{book.author}</p>
 
-                <button onClick={() => handleRemove(book.bookKey)}>
+                <button
+                  className="remove-btn"
+                  onClick={() => handleRemove(book.bookKey)}
+                >
                   Remove
                 </button>
               </div>

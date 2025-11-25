@@ -9,7 +9,7 @@ function Navbar({ user, setUser }) {
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-    setUser(null); // met à jour App.jsx
+    setUser(null);
     navigate("/");
   };
 
@@ -22,6 +22,13 @@ function Navbar({ user, setUser }) {
       </div>
 
       <div className="navbar-right">
+        {/* 🔥 Bouton Books affiché si l'utilisateur est connecté */}
+        {user && (
+          <button className="books-btn" onClick={() => navigate("/books")}>
+            📚 Books
+          </button>
+        )}
+
         {user ? (
           <div className="user-menu">
             <button
@@ -42,7 +49,6 @@ function Navbar({ user, setUser }) {
           </div>
         ) : (
           <div className="auth-links">
-            {/* Boutons Login/Register modernes */}
             <Link to="/login" className="auth-btn login">
               Login
             </Link>
