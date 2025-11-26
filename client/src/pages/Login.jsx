@@ -17,15 +17,17 @@ export default function Login({ setUser }) {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const apiUrl = process.env.REACT_APP_API_URL || "";
+      const res = await fetch(`${apiUrl}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData), // { email, password }
+        body: JSON.stringify(formData),
       });
 
       const data = await res.json();
 
       if (res.ok) {
+        // Stocker les infos de l'utilisateur et le token
         const loggedUser = {
           username: data.user.username,
           email: formData.email,
@@ -33,6 +35,7 @@ export default function Login({ setUser }) {
         localStorage.setItem("user", JSON.stringify(loggedUser));
         localStorage.setItem("token", data.token);
         setUser(loggedUser);
+
         navigate("/books");
       } else {
         alert(data.message || "Login failed");

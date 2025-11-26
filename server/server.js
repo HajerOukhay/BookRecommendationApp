@@ -9,6 +9,7 @@ const protectedRoutes = require("./routes/protectedRoutes");
 const bookRoutes = require("./routes/bookRoutes");
 const feedbackRoutes = require("./routes/feedbacks");
 const favoriteRoutes = require("./routes/favoriteRoutes");
+const path = require("path");
 
 const app = express();
 
@@ -43,3 +44,10 @@ app.use("/api/favorites", favoriteRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+
+// Serve React build
+app.use(express.static(path.join(__dirname, "../client/build")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
+});
